@@ -62,7 +62,9 @@ class ListControllerFactory implements AbstractFactoryInterface
             $requestedName, 
             array $options = null
     ) {
-        return new $requestedName($container->get($this->repository_class));
+        $logger = $container->get('Core\Logger\Logger');
+        
+        return new $requestedName($container->get($this->repository_class), $logger);
     }
 }
 
