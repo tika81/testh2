@@ -1,0 +1,9 @@
+<h1>Edit label</h1>
+
+<?php
+$form = $this->form;
+$form->setAttribute('action', $this->url('label/edit', [], true));
+echo $this->partial('label/write-label/form', [
+    'form' => $form,
+    'submitLabel' => 'Update post',
+]);

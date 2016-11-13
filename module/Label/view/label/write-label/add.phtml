@@ -1,0 +1,9 @@
+<h1>Add a label</h1>
+
+<?php
+$form = $this->form;
+$form->setAttribute('action', $this->url());
+echo $this->partial('label/write-label/form', [
+    'form' => $form,
+    'submitLabel' => 'Insert new label',
+]);

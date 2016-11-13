@@ -1,0 +1,13 @@
+<h1>Delete label</h1>
+
+<p>Are you sure you want to delete the following label?</p>
+
+<ul class="list-group">
+    <li class="list-group-item"><?= $this->escapeHtml($this->label->name) ?></li>
+</ul>
+
+<form action="<?php $this->url('label/delete', [], true) ?>" method="post">
+    <input type="hidden" name="id" value="<?= $this->escapeHtmlAttr($this->label->id) ?>"/>
+    <input class="btn btn-default" type="submit" name="confirm" value="Cancel"/>
+    <input class="btn btn-danger" type="submit" name="confirm" value="Delete"/>
+</form>

@@ -1,0 +1,21 @@
+<h1>Labels</h1>
+<div>
+<?php foreach ($this->labels as $label): ?>
+    <div class="list-group">
+        <h4 class="list-group-item-heading">
+            <a href="<?= $this->url('label/detail', ['id' => $label->id]) ?>">
+                <?= $label->name?>
+            </a>
+        </h4>
+        
+        <div>
+            <a class="btn btn-xs btn-default" href="<?= $this->url('label/edit', ['id' => $label->id]) ?>">Edit</a>
+            <a class="btn btn-xs btn-danger" href="<?= $this->url('label/delete', ['id' => $label->id])?>">Delete</a>
+        </div>
+    </div>
+<?php endforeach; ?>
+</div>
+
+<div class="btn-group" role="group" aria-label="Label actions">
+    <a class="btn btn-primary" href="<?= $this->url('label/add') ?>">Write new label</a>
+</div>
