@@ -11,10 +11,6 @@ use Core\Factory\CommandFactory;
 
 return [
     'service_manager' => [
-        'factories' => [
-//            Model\LabelRepository::class => Factory\LabelRepositoryFactory::class,
-//            Model\LabelCommand::class => Factory\LabelCommandFactory::class,
-        ],
         'abstract_factories' => [
             RepositoryFactory::class,
             CommandFactory::class,
@@ -55,7 +51,7 @@ return [
     
     'mapper_config' => [
         'Label\Model\LabelRepository' => [
-//            'table_name' => 'ht_label',
+            'table_name' => 'ht_label',
             'entity_class' => 'Label\Model\Label',
             'type' => 'repository',
         ],

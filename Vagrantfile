@@ -53,9 +53,10 @@ if ! grep -q "cd /var/www/testh2" /home/ubuntu/.profile; then
     echo "cd /var/www/testh2" >> /home/ubuntu/.profile
 fi
 
+mkdir /var/www/testh2/data/cache /var/www/testh2/data/log /var/www/testh2/data/uploads
+chmod go+rw -R /var/www/testh2/data/cache /var/www/testh2/data/log /var/www/testh2/data/uploads
 cd /var/www/testh2
 touch data/log/app.log
-chmod go+rw -R /var/www/testh2/data/cache /var/www/testh2/data/log /var/www/testh2/data/uploads
 cp docs/configs/local.php config/autoload/local.php
 
 mysql> CREATE USER 'root'@'localhost' IDENTIFIED BY 'root';
@@ -74,7 +75,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box = 'ubuntu/xenial64'
   config.vm.network "forwarded_port", guest: 80, host: 8080
   config.vm.synced_folder '.', '/var/www/testh2'
-  config.vm.provision 'shell', inline: @script
+  config.vm.provision 'shell', inline: @script, run: "always"
 
   config.vm.provider "virtualbox" do |vb|
     vb.customize ["modifyvm", :id, "--memory", "512"]

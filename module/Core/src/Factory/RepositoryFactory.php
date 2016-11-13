@@ -17,7 +17,7 @@ class RepositoryFactory implements AbstractFactoryInterface
     const TYPE = 'repository';
 
     protected $entity_class;
-//    protected $table_name;
+    protected $table_name;
 
     /**
      * Can the factory create an instance for the service?
@@ -47,11 +47,11 @@ class RepositoryFactory implements AbstractFactoryInterface
             return false;
         }
         
-//        $this->table_name = (!empty($mapper_config['table_name'])) 
-//                ? $mapper_config['table_name'] : false;
-//        if (!$this->table_name) {
-//            return false;
-//        }
+        $this->table_name = (!empty($mapper_config['table_name'])) 
+                ? $mapper_config['table_name'] : false;
+        if (!$this->table_name) {
+            return false;
+        }
         
         return true;
     }
@@ -75,6 +75,7 @@ class RepositoryFactory implements AbstractFactoryInterface
     ) {
         $db = $container->get(AdapterInterface::class);
         $sql = new Sql($db);
+        $select = $sql->select($this->table_name);
         
         $hydrator = new ReflectionHydrator();
         $prototype = new $this->entity_class;
@@ -82,6 +83,7 @@ class RepositoryFactory implements AbstractFactoryInterface
         
         return new $requestedName(
                 $sql,
+                $select,
                 $result_set
         );
     }
