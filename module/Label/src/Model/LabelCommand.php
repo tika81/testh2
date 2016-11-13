@@ -12,7 +12,7 @@ use Core\Model\Entity;
 
 /**
  * Label Command
- * @author bojan
+ * @author bojan 
  */
 class LabelCommand implements CommandInterface
 {
