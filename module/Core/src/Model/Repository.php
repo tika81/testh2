@@ -47,7 +47,8 @@ class Repository implements RepositoryInterface
             Sql $sql, 
             Select $select, 
             HydratingResultSet $result_set, 
-            LoggerInterface $logger) {
+            LoggerInterface $logger
+    ) {
         $this->sql = $sql;
         $this->select = $select;
         $this->result_set = $result_set;

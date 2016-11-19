@@ -15,8 +15,11 @@ class LoggerFactory implements FactoryInterface
      * @param string $requestedName
      * @param array $options
      */
-    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
-    {
+    public function __invoke(
+            ContainerInterface $container, 
+            $requestedName, 
+            array $options = null
+    ) {
         $config = $container->get('Config');
         $log_config = $config['logger'];
         $name = (!empty($log_config['name'])) ? $log_config['name'] : 'default';

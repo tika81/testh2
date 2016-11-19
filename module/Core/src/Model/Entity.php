@@ -16,7 +16,8 @@ class Entity implements EntityInterface
     public function exchangeArray($data = [])
     {
         foreach ($this->public_properties as $public_property) {
-            $this->$public_property = (!empty($data[$public_property])) ? $data[$public_property] : null;
+            $this->$public_property = (!empty($data[$public_property])) 
+                    ? $data[$public_property] : null;
         }
     }
     
@@ -28,7 +29,8 @@ class Entity implements EntityInterface
     {
         $data = [];
         foreach ($this->public_properties as $public_property) {
-            $data[$public_property] = (!empty($this->$public_property)) ? $this->$public_property : null;
+            $data[$public_property] = (!empty($this->$public_property)) 
+                    ? $this->$public_property : null;
         }
         
         return $data;

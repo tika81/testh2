@@ -2,7 +2,7 @@
 namespace Label\Controller;
 
 use Zend\Mvc\Controller\AbstractActionController;
-use Label\Model\LabelRepository;
+use Core\Model\RepositoryInterface;
 use Zend\View\Model\ViewModel;
 use Psr\Log\LoggerInterface;
 
@@ -19,19 +19,19 @@ class ListLabelController extends AbstractActionController
     protected $logger;
     
     /**
-     * @var LabelRepository 
+     * @var RepositoryInterface 
      */
-    protected $label_repository;
+    protected $repository;
     
     /**
-     * @param LabelRepository $label_repository
+     * @param LabelRepository $repository
      * @param Logger $logger
      */
     public function __construct(
-            LabelRepository $label_repository, 
+            RepositoryInterface $repository, 
             LoggerInterface $logger
     ) {
-        $this->label_repository = $label_repository;
+        $this->repository = $repository;
         $this->logger = $logger;
     }
     
@@ -42,7 +42,7 @@ class ListLabelController extends AbstractActionController
     public function indexAction()
     {
         return new ViewModel([
-            'labels' => $this->label_repository->fetchAll(),
+            'labels' => $this->repository->fetchAll(),
         ]);
     }
     
@@ -55,7 +55,7 @@ class ListLabelController extends AbstractActionController
         $id = $this->params()->fromRoute('id');
         
         try {
-            $label = $this->label_repository->fetch($id);
+            $label = $this->repository->fetch($id);
         } catch (\InvalidArgumentException $ex) {
             return $this->redirect()->toRoute('label');
         }

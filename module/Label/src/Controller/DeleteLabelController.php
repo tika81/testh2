@@ -1,8 +1,8 @@
 <?php
 namespace Label\Controller;
 
-use Label\Model\LabelCommand;
-use Label\Model\LabelRepository;
+use Core\Model\CommandInterface;
+use Core\Model\RepositoryInterface;
 use InvalidArgumentException;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
@@ -15,12 +15,12 @@ use Psr\Log\LoggerInterface;
 class DeleteLabelController extends AbstractActionController
 {
     /**
-     * @var LabelCommand 
+     * @var CommandInterface 
      */
     private $command;
     
     /**
-     * @var LabelRepository 
+     * @var RepositoryInterface 
      */
     private $repository;
     
@@ -31,13 +31,13 @@ class DeleteLabelController extends AbstractActionController
     protected $logger;
     
     /**
-     * @param LabelCommand $command
-     * @param LabelRepository $repository
+     * @param CommandInterface $command
+     * @param RepositoryInterface $repository
      * @param LoggerInterface $logger
      */
     public function __construct(
-            LabelCommand $command, 
-            LabelRepository $repository,
+            CommandInterface $command, 
+            RepositoryInterface $repository,
             LoggerInterface $logger
     ) {
         $this->command = $command;
@@ -51,14 +51,16 @@ class DeleteLabelController extends AbstractActionController
      */
     public function deleteAction()
     {
-        $id = $this->params()->fromRoute('id');
+        $id = intval($this->params()->fromRoute('id'));
         if (!$id) {
+            $this->logger->error(sprintf('[Line:%d] - Identifier \'id\' not found, file: %s', __LINE__, __FILE__));
             return $this->redirect()->toRoute('label');
         }
         
         try {
             $label = $this->repository->fetch($id);
         } catch (InvalidArgumentException $ex) {
+            $this->logger->error(sprintf('[Line:%d] - Not found, file: %s', __LINE__, __FILE__), [$ex->getMessage()]);
             return $this->redirect()->toRoute('label');
         }
         
@@ -71,7 +73,10 @@ class DeleteLabelController extends AbstractActionController
             return $this->redirect()->toRoute('label');
         }
         
-        $deleted_label = $this->command->delete($label);
+        //delete label
+        if (!$this->command->delete($label)) {
+            $this->logger->error(sprintf('[Line:%d] - Delete action failed, file: %s', __LINE__, __FILE__));
+        }
         return $this->redirect()->toRoute('label');
     }
     
