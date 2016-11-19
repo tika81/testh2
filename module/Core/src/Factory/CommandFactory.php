@@ -73,8 +73,9 @@ class CommandFactory implements AbstractFactoryInterface
         $insert = new Insert($this->table_name);
         $update = new Update($this->table_name);
         $delete = new Delete($this->table_name);
+        $logger = $container->get('Core\Logger\MonologLogger');
         
-        return new $requestedName($sql, $insert, $update, $delete);
+        return new $requestedName($sql, $insert, $update, $delete, $logger);
     }
 }
 

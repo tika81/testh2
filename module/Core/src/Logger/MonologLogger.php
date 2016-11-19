@@ -1,13 +1,13 @@
 <?php
 namespace Core\Logger;
 
-use Monolog\Logger as MonologLogger;
+use Monolog\Logger;
 
 /**
  * Logger
  * @author bojan
  */
-class Logger extends MonologLogger
+class MonologLogger extends Logger
 {
     
 }

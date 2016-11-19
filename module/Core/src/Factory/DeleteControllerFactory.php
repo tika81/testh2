@@ -71,10 +71,11 @@ class DeleteControllerFactory implements AbstractFactoryInterface
             $requestedName, 
             array $options = null
     ) {
-        return new $requestedName(
-                $container->get($this->command_class),
-                $container->get($this->repository_class)
-        );
+        $command = $container->get($this->command_class);
+        $repository = $container->get($this->repository_class);
+        $logger = $container->get('Core\Logger\MonologLogger');
+        
+        return new $requestedName($command, $repository, $logger);
     }
 }
 

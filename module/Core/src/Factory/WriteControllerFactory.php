@@ -81,11 +81,12 @@ class WriteControllerFactory implements AbstractFactoryInterface
             array $options = null
     ) {
         $form_manager = $container->get('FormElementManager');
-        return new $requestedName(
-                $container->get($this->command_class),
-                $form_manager->get($this->form_class),
-                $container->get($this->repository_class)
-        );
+        $form = $form_manager->get($this->form_class);
+        $command = $container->get($this->command_class);
+        $repository = $container->get($this->repository_class);
+        $logger = $container->get('Core\Logger\MonologLogger');
+        
+        return new $requestedName($command, $form, $repository, $logger);
     }
 }
 

@@ -1,12 +1,12 @@
 <?php
 namespace Label\Controller;
 
-use Label\Model\Label;
 use Label\Model\LabelCommand;
 use Label\Model\LabelRepository;
 use InvalidArgumentException;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
+use Psr\Log\LoggerInterface;
 
 /**
  * Delete Label Controller
@@ -25,15 +25,24 @@ class DeleteLabelController extends AbstractActionController
     private $repository;
     
     /**
+     * Logger
+     * @var LoggerInterface 
+     */
+    protected $logger;
+    
+    /**
      * @param LabelCommand $command
      * @param LabelRepository $repository
+     * @param LoggerInterface $logger
      */
     public function __construct(
             LabelCommand $command, 
-            LabelRepository $repository
+            LabelRepository $repository,
+            LoggerInterface $logger
     ) {
         $this->command = $command;
         $this->repository = $repository;
+        $this->logger = $logger;
     }
     
     /**

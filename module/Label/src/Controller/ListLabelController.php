@@ -4,7 +4,7 @@ namespace Label\Controller;
 use Zend\Mvc\Controller\AbstractActionController;
 use Label\Model\LabelRepository;
 use Zend\View\Model\ViewModel;
-use Core\Logger\Logger;
+use Psr\Log\LoggerInterface;
 
 /**
  * List Label Controller
@@ -14,7 +14,7 @@ class ListLabelController extends AbstractActionController
 {
     /**
      * Logger
-     * @var type 
+     * @var LoggerInterface 
      */
     protected $logger;
     
@@ -27,8 +27,10 @@ class ListLabelController extends AbstractActionController
      * @param LabelRepository $label_repository
      * @param Logger $logger
      */
-    public function __construct(LabelRepository $label_repository, Logger $logger) 
-    {
+    public function __construct(
+            LabelRepository $label_repository, 
+            LoggerInterface $logger
+    ) {
         $this->label_repository = $label_repository;
         $this->logger = $logger;
     }

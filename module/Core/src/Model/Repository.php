@@ -8,6 +8,7 @@ use Zend\Db\Sql\Select;
 use Zend\Db\Adapter\Driver\ResultInterface;
 use Zend\Db\ResultSet\HydratingResultSet;
 use Core\Model\RepositoryInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Repository mapper
@@ -30,11 +31,27 @@ class Repository implements RepositoryInterface
      */
     private $result_set;
     
-    public function __construct(Sql $sql, Select $select, HydratingResultSet $result_set)
-    {
+    /**
+     * Logger
+     * @var LoggerInterface 
+     */
+    protected $logger;
+    
+    /**
+     * @param Sql $sql
+     * @param Select $select
+     * @param HydratingResultSet $result_set
+     * @param LoggerInterface $logger
+     */
+    public function __construct(
+            Sql $sql, 
+            Select $select, 
+            HydratingResultSet $result_set, 
+            LoggerInterface $logger) {
         $this->sql = $sql;
         $this->select = $select;
         $this->result_set = $result_set;
+        $this->logger = $logger;
     }
     
     /**

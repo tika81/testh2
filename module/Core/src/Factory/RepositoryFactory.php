@@ -80,12 +80,9 @@ class RepositoryFactory implements AbstractFactoryInterface
         $hydrator = new ReflectionHydrator();
         $prototype = new $this->entity_class;
         $result_set = new HydratingResultSet($hydrator, $prototype);
+        $logger = $container->get('Core\Logger\MonologLogger');
         
-        return new $requestedName(
-                $sql,
-                $select,
-                $result_set
-        );
+        return new $requestedName($sql, $select, $result_set, $logger);
     }
 }
 

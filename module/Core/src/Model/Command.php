@@ -9,6 +9,7 @@ use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\Update;
 use Core\Model\CommandInterface;
 use Core\Model\Entity;
+use Psr\Log\LoggerInterface;
 
 /**
  * Command mapper
@@ -42,16 +43,31 @@ class Command implements CommandInterface
      */
     private $delete;
     
+    /**
+     * Logger
+     * @var LoggerInterface 
+     */
+    protected $logger;
+    
+    /**
+     * @param Sql $sql
+     * @param Insert $insert
+     * @param Update $update
+     * @param Delete $delete
+     * @param LoggerInterface $logger
+     */
     public function __construct(
             Sql $sql,
             Insert $insert,
             Update $update,
-            Delete $delete
+            Delete $delete,
+            LoggerInterface $logger
     ) {
         $this->sql    = $sql;
         $this->insert = $insert;
         $this->update = $update;
         $this->delete = $delete;
+        $this->logger = $logger;
     }
     
      /**

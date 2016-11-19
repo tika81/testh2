@@ -7,6 +7,7 @@ use Label\Model\LabelRepository;
 use InvalidArgumentException;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
+use Psr\Log\LoggerInterface;
 
 /**
  * Write Label Controller
@@ -28,19 +29,29 @@ class WriteLabelController extends AbstractActionController
      * @var LabelRepository
      */
     private $repository;
+    
+    /**
+     * Logger
+     * @var LoggerInterface 
+     */
+    protected $logger;
 
     /**
      * @param LabelCommand $command
      * @param LabelForm $form
+     * @param LabelRepository $repository
+     * @param LoggerInterface $logger
      */
     public function __construct(
             LabelCommand $command, 
             LabelForm $form, 
-            LabelRepository $repository
-    ){
+            LabelRepository $repository,
+            LoggerInterface $logger
+    ) {
         $this->command    = $command;
         $this->form       = $form;
         $this->repository = $repository;
+        $this->logger = $logger;
     }
     
     /**
