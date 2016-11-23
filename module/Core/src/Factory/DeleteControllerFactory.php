@@ -12,8 +12,7 @@ class DeleteControllerFactory implements AbstractFactoryInterface
 {
     const TYPE = 'delete';
     
-    protected $command_class;
-    protected $repository_class;
+    protected $config;
     
     /**
      * Can the factory create an instance for the service?
@@ -42,19 +41,20 @@ class DeleteControllerFactory implements AbstractFactoryInterface
         }
         
         //command
-        $this->command_class = (!empty($config['command_class'])) 
+        $command_class = (!empty($config['command_class'])) 
                 ? $config['command_class'] : false;
-        if (!$this->command_class) {
+        if (!$command_class) {
             return false;
         }
         
         //repository
-        $this->repository_class = (!empty($config['repository_class'])) 
+        $repository_class = (!empty($config['repository_class'])) 
                 ? $config['repository_class'] : false;
-        if (!$this->repository_class) {
+        if (!$repository_class) {
             return false;
         }
         
+        $this->config = $config;
         return true;
     }
     
@@ -75,11 +75,16 @@ class DeleteControllerFactory implements AbstractFactoryInterface
             $requestedName, 
             array $options = null
     ) {
-        $command = $container->get($this->command_class);
-        $repository = $container->get($this->repository_class);
+        $config = $this->config;
+        
+        $command = $container->get($config['command_class']);
+        $repository = $container->get($config['repository_class']);
         $logger = $container->get('Core\Logger\MonologLogger');
         
-        return new $requestedName($command, $repository, $logger);
+        $args = [$command, $repository, $logger];
+        
+        $reflector = new \ReflectionClass($requestedName);
+        return $reflector->newInstanceArgs($args);
     }
 }
 

@@ -12,9 +12,7 @@ class WriteControllerFactory implements AbstractFactoryInterface
 {
     const TYPE = 'write';
     
-    protected $command_class;
-    protected $form_class;
-    protected $repository_class;
+    protected $config;
 
     /**
      * Can the factory create an instance for the service?
@@ -44,26 +42,27 @@ class WriteControllerFactory implements AbstractFactoryInterface
         }
         
         //command
-        $this->command_class = (!empty($config['command_class'])) 
+        $command_class = (!empty($config['command_class'])) 
                 ? $config['command_class'] : false;
-        if (!$this->command_class) {
+        if (!$command_class) {
             return false;
         }
         
         //form
-        $this->form_class = (!empty($config['form_class'])) 
+        $form_class = (!empty($config['form_class'])) 
                 ? $config['form_class'] : false;
-        if (!$this->form_class) {
+        if (!$form_class) {
             return false;
         }
         
         //repository
-        $this->repository_class = (!empty($config['repository_class'])) 
+        $repository_class = (!empty($config['repository_class'])) 
                 ? $config['repository_class'] : false;
-        if (!$this->repository_class) {
+        if (!$repository_class) {
             return false;
         }
         
+        $this->config = $config;
         return true;
     }
     
@@ -84,13 +83,18 @@ class WriteControllerFactory implements AbstractFactoryInterface
             $requestedName, 
             array $options = null
     ) {
+        $config = $this->config;
+        
         $form_manager = $container->get('FormElementManager');
-        $form = $form_manager->get($this->form_class);
-        $command = $container->get($this->command_class);
-        $repository = $container->get($this->repository_class);
+        $form = $form_manager->get($config['form_class']);
+        $command = $container->get($config['command_class']);
+        $repository = $container->get($config['repository_class']);
         $logger = $container->get('Core\Logger\MonologLogger');
         
-        return new $requestedName($command, $form, $repository, $logger);
+        $args = [$command, $form, $repository, $logger];
+        
+        $reflector = new \ReflectionClass($requestedName);
+        return $reflector->newInstanceArgs($args);
     }
 }
 

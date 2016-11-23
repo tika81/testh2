@@ -12,7 +12,7 @@ class ListControllerFactory implements AbstractFactoryInterface
 {
     const TYPE = 'list';
     
-    protected $repository_class;
+    protected $config;
     
     /**
      * Can the factory create an instance for the service?
@@ -40,12 +40,13 @@ class ListControllerFactory implements AbstractFactoryInterface
             return false;
         }
         
-        $this->repository_class = (!empty($config['repository_class'])) 
+        $repository_class = (!empty($config['repository_class'])) 
                 ? $config['repository_class'] : null;
-        if (!$this->repository_class) {
+        if (!$repository_class) {
             return false;
         }
         
+        $this->config = $config;
         return true;
     }
     
@@ -66,10 +67,15 @@ class ListControllerFactory implements AbstractFactoryInterface
             $requestedName, 
             array $options = null
     ) {
-        $logger = $container->get('Core\Logger\MonologLogger');
-        $repository = $container->get($this->repository_class);
+        $config = $this->config;
         
-        return new $requestedName($repository, $logger);
+        $logger = $container->get('Core\Logger\MonologLogger');
+        $repository = $container->get($config['repository_class']);
+        
+        $args = [$repository, $logger];
+        
+        $reflector = new \ReflectionClass($requestedName);
+        return $reflector->newInstanceArgs($args);
     }
 }
 
