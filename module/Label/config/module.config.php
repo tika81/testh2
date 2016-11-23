@@ -92,7 +92,8 @@ return [
                         'options' => [
                             'route' => '/add',
                             'defaults' => [
-                                'controller' => Controller\WriteLabelController::class,
+                                'controller' => 
+                                    Controller\WriteLabelController::class,
                                 'action' => 'add',
                             ]
                         ]
@@ -102,7 +103,8 @@ return [
                         'options' => [
                             'route'    => '/edit/:id',
                             'defaults' => [
-                                'controller' => Controller\WriteLabelController::class,
+                                'controller' => 
+                                    Controller\WriteLabelController::class,
                                 'action'     => 'edit',
                             ],
                             'constraints' => [
@@ -115,7 +117,8 @@ return [
                         'options' => [
                             'route' => '/delete/:id',
                             'defaults' => [
-                                'controller' => Controller\DeleteLabelController::class,
+                                'controller' => 
+                                    Controller\DeleteLabelController::class,
                                 'action' => 'delete',
                             ],
                             'constraints' => [

@@ -78,6 +78,9 @@ class WriteLabelController extends AbstractActionController
         try {
             $inserted_label = $this->command->insert($label);
         } catch (Exception $ex) {
+            $this->logger->critical(sprintf(
+                '[Line:%d] - %s File: %s', __LINE__, $ex->getMessage(), __FILE__
+            ));
             throw $ex;
         }
         
@@ -95,12 +98,19 @@ class WriteLabelController extends AbstractActionController
     {
         $id = $this->params()->fromRoute('id');
         if (!$id) {
+             $this->logger->error(sprintf(
+                '[Line:%d] - Identifier \'id\' not found, file: %s', __LINE__, 
+                    __FILE__
+            ));
             return $this->redirect()->toRoute('label');
         }
         
         try {
             $label = $this->repository->fetch($id);
         } catch (InvalidArgumentException $ex) {
+            $this->logger->error(sprintf(
+                '[Line:%d] - %s File: %s', __LINE__, $ex->getMessage(), __FILE__
+            ));
             return $this->redirect()->toRoute('label');
         }
         
@@ -116,7 +126,15 @@ class WriteLabelController extends AbstractActionController
             return $view_model;
         }
         
-        $updated_label = $this->command->update($label);
+        try {
+            $updated_label = $this->command->update($label);
+        } catch (Exception $ex) {
+            $this->logger->critical(sprintf(
+                '[Line:%d] - %s File: %s', __LINE__, $ex->getMessage(), __FILE__
+            ));
+            throw $ex;
+        }
+        
         return $this->redirect()->toRoute(
                 'label/detail',
                 ['id' => $updated_label->id]

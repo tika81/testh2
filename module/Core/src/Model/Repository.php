@@ -83,15 +83,23 @@ class Repository implements RepositoryInterface
         $result = $statement->execute();
         
         if (!$result instanceof ResultInterface || !$result->isQueryResult()) {
-            throw new \Zend\Db\ResultSet\Exception\RuntimeException(sprintf(
-                'Failed retrieving entity with identifier "%s"; unknown database error.',
-                $id
+            $this->logger->critical(sprintf(
+                '[Line:%d] - Failed retrieving entity with identifier "%s"; '
+                . 'unknown database error, file: %s', __LINE__, $id, __FILE__
             ));
+            throw new \Zend\Db\ResultSet\Exception\RuntimeException(
+                    sprintf('Failed retrieving entity with identifier "%s"; '
+                    . 'unknown database error.', $id)
+            );
         }
         
         $this->result_set->initialize($result);
         $entity = $this->result_set->current();
         if (!$entity) {
+            $this->logger->error(sprintf(
+                '[Line: %d] - Entity with identifier "%s" not found, file: %s ',
+                    __LINE__, $id, __FILE__
+            ));
             throw new InvalidArgumentException(sprintf(
                 'Entity with identifier "%s" not found.',
                 $id

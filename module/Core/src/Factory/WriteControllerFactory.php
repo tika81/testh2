@@ -28,13 +28,15 @@ class WriteControllerFactory implements AbstractFactoryInterface
         $config = $container->get('Config');
         
         //config
-        $controller_config = (!empty($config['controller_config'][$requestedName])) 
+        $controller_config = 
+                (!empty($config['controller_config'][$requestedName])) 
                 ? $config['controller_config'][$requestedName] : false;
         if (!$controller_config) {
             return false;
         }
         
-        $type = (!empty($controller_config['type'])) ? $controller_config['type'] : false;
+        $type = (!empty($controller_config['type']))
+                ? $controller_config['type'] : false;
         if (!$type || $type != self::TYPE) {
             return false;
         }
@@ -54,7 +56,8 @@ class WriteControllerFactory implements AbstractFactoryInterface
         }
         
         //repository
-        $this->repository_class = (!empty($controller_config['repository_class'])) 
+        $this->repository_class = 
+                (!empty($controller_config['repository_class'])) 
                 ? $controller_config['repository_class'] : false;
         if (!$this->repository_class) {
             return false;

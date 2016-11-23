@@ -73,7 +73,8 @@ class Command implements CommandInterface
      /**
      * Persist a new Entity in the system.
      *
-     * @param Entity $entity The Entity to insert; may or may not have an identifier.
+     * @param Entity $entity The Entity to insert; may or may not have 
+     * an identifier.
      * @return Entity The inserted Entity, with identifier.
      */
     public function insert(Entity $entity)
@@ -85,6 +86,10 @@ class Command implements CommandInterface
         $result = $stmt->execute();
         
         if (!$result instanceof ResultInterface) {
+            $this->logger->critical(sprintf(
+                '[Line: %d] - Database error occurred during entity '
+                    . 'insert operation, file: %s ', __LINE__, __FILE__)
+            );
             throw new RuntimeException(
                 'Database error occurred during entity insert operation'
             );
@@ -107,6 +112,10 @@ class Command implements CommandInterface
         $identifier = $this->identifier;
         
         if (!$entity->$identifier) {
+            $this->logger->error(sprintf(
+                '[Line: %d] - Cannot update Entity; missing identifier,'
+                    . ' file: %s', __LINE__, __FILE__
+            ));
             throw RuntimeException('Cannot update Entity; missing identifier');
         }
         
@@ -117,6 +126,10 @@ class Command implements CommandInterface
         $result = $stmt->execute();
         
         if (!$result instanceof ResultInterface) {
+            $this->logger->critical(sprintf(
+                '[Line: %d] - Database error occurred during Entity '
+                    . 'update operation, file: %s ', __LINE__, __FILE__
+            ));
             throw new RuntimeException(
                 'Database error occurred during Entity update operation'
             );
@@ -136,6 +149,10 @@ class Command implements CommandInterface
         $identifier = $this->identifier;
         
         if (!$entity->$identifier) {
+            $this->logger->error(sprintf(
+                '[Line: %d] - Cannot delete Entity; missing identifier,'
+                    . ' file: %s ', __LINE__, __FILE__)
+            );
             throw RuntimeException('Cannot delete Entity; missing identifier');
         }
         
@@ -145,6 +162,10 @@ class Command implements CommandInterface
         $result = $stmt->execute();
         
         if (!$result instanceof ResultInterface) {
+            $this->logger->critical(
+                sprintf('[Line:%d] - Delete action failed, file: %s', 
+                        __LINE__, __FILE__)
+            );
             return false;
         }
         

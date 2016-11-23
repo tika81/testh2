@@ -37,7 +37,8 @@ class CommandFactory implements AbstractFactoryInterface
             return false;
         }
         
-        $type = (!empty($mapper_config['type'])) ? $mapper_config['type'] : false;
+        $type = (!empty($mapper_config['type'])) 
+                ? $mapper_config['type'] : false;
         if (!$type || $type != self::TYPE) {
             return false;
         }

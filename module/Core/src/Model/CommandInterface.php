@@ -10,7 +10,8 @@ interface CommandInterface
     /**
      * Persist a new object in the system.
      *
-     * @param Entity $entity The object to insert; may or may not have an identifier.
+     * @param Entity $entity The object to insert; may or may not have 
+     * an identifier.
      * @return Entity The inserted object, with identifier.
      */
     public function insert(Entity $entity);

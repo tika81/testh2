@@ -57,6 +57,9 @@ class ListLabelController extends AbstractActionController
         try {
             $label = $this->repository->fetch($id);
         } catch (\InvalidArgumentException $ex) {
+            $this->logger->error(sprintf(
+                '[Line:%d] - %s File: %s', __LINE__, $ex->getMessage(), __FILE__
+            ));
             return $this->redirect()->toRoute('label');
         }
         

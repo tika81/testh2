@@ -53,14 +53,20 @@ class DeleteLabelController extends AbstractActionController
     {
         $id = intval($this->params()->fromRoute('id'));
         if (!$id) {
-            $this->logger->error(sprintf('[Line:%d] - Identifier \'id\' not found, file: %s', __LINE__, __FILE__));
+            $this->logger->error(sprintf(
+                '[Line:%d] - Identifier \'id\' not found, file: %s', __LINE__, 
+                    __FILE__
+            ));
             return $this->redirect()->toRoute('label');
         }
         
         try {
             $label = $this->repository->fetch($id);
         } catch (InvalidArgumentException $ex) {
-            $this->logger->error(sprintf('[Line:%d] - Not found, file: %s', __LINE__, __FILE__), [$ex->getMessage()]);
+            $this->logger->error(
+                sprintf('[Line:%d] - Not found, file: %s', __LINE__, __FILE__), 
+                [$ex->getMessage()]
+            );
             return $this->redirect()->toRoute('label');
         }
         
@@ -69,13 +75,16 @@ class DeleteLabelController extends AbstractActionController
             return new ViewModel(['label' => $label]);
         }
         
-        if ($id != $request->getPost('id') || 'Delete' !== $request->getPost('confirm', 'no')) {
+        if ($id != $request->getPost('id') 
+                || 'Delete' !== $request->getPost('confirm', 'no')) {
             return $this->redirect()->toRoute('label');
         }
         
         //delete label
         if (!$this->command->delete($label)) {
-            $this->logger->error(sprintf('[Line:%d] - Delete action failed, file: %s', __LINE__, __FILE__));
+            $this->logger->critical(sprintf(
+                '[Line:%d] - Delete action failed, file: %s', __LINE__, __FILE__
+            ));
         }
         return $this->redirect()->toRoute('label');
     }
