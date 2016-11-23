@@ -23,24 +23,25 @@ class ListControllerFactory implements AbstractFactoryInterface
      */
     public function canCreate(ContainerInterface $container, $requestedName)
     {
-        $config = $container->get('Config');
-        
-        $controller_config = 
-                (!empty($config['controller_config'][$requestedName])) 
-                ? $config['controller_config'][$requestedName] : null;
-        if (!$controller_config) {
+        if (!$container->get('Config') || !$container->get('EventManager')) {
             return false;
         }
         
-        $type = (!empty($controller_config['type'])) 
-                ? $controller_config['type'] : false;
+        $global_config = $container->get('Config');
+        
+        $config = (!empty($global_config['controller_config'][$requestedName])) 
+                ? $global_config['controller_config'][$requestedName] : false;
+        if (!$config) {
+            return false;
+        }
+        
+        $type = (!empty($config['type'])) ? $config['type'] : false;
         if (!$type || $type != self::TYPE) {
             return false;
         }
         
-        $this->repository_class = 
-                (!empty($controller_config['repository_class'])) 
-                ? $controller_config['repository_class'] : null;
+        $this->repository_class = (!empty($config['repository_class'])) 
+                ? $config['repository_class'] : null;
         if (!$this->repository_class) {
             return false;
         }

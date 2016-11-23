@@ -3,32 +3,12 @@ namespace Label;
 
 use Zend\Router\Http\Literal;
 use Zend\Router\Http\Segment;
-use Core\Factory\ListControllerFactory;
-use Core\Factory\WriteControllerFactory;
-use Core\Factory\DeleteControllerFactory;
-use Core\Factory\RepositoryFactory;
-use Core\Factory\CommandFactory;
 
 return [
-    'service_manager' => [
-        'abstract_factories' => [
-            RepositoryFactory::class,
-            CommandFactory::class,
-        ],
-    ],
-    
     'view_manager' => [
         'template_path_stack' => [
             __DIR__ . '/../view',
         ],
-    ],
-    
-    'controllers' => [
-        'abstract_factories' => [
-            ListControllerFactory::class,
-            WriteControllerFactory::class,
-            DeleteControllerFactory::class,
-        ]
     ],
     
     'controller_config' => [

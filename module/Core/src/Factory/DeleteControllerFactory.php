@@ -24,29 +24,33 @@ class DeleteControllerFactory implements AbstractFactoryInterface
      */
     public function canCreate(ContainerInterface $container, $requestedName)
     {
-        $config = $container->get('Config');
-        
-        $controller_config = (!empty($config['controller_config'][$requestedName])) 
-                ? $config['controller_config'][$requestedName] : false;
-        if (!$controller_config) {
+        if (!$container->get('Config') || !$container->get('EventManager')) {
             return false;
         }
         
-        $type = (!empty($controller_config['type'])) ? $controller_config['type'] : false;
+        $global_config = $container->get('Config');
+        
+        $config = (!empty($global_config['controller_config'][$requestedName])) 
+                ? $global_config['controller_config'][$requestedName] : false;
+        if (!$config) {
+            return false;
+        }
+        
+        $type = (!empty($config['type'])) ? $config['type'] : false;
         if (!$type || $type != self::TYPE) {
             return false;
         }
         
         //command
-        $this->command_class = (!empty($controller_config['command_class'])) 
-                ? $controller_config['command_class'] : false;
+        $this->command_class = (!empty($config['command_class'])) 
+                ? $config['command_class'] : false;
         if (!$this->command_class) {
             return false;
         }
         
         //repository
-        $this->repository_class = (!empty($controller_config['repository_class'])) 
-                ? $controller_config['repository_class'] : false;
+        $this->repository_class = (!empty($config['repository_class'])) 
+                ? $config['repository_class'] : false;
         if (!$this->repository_class) {
             return false;
         }

@@ -29,22 +29,25 @@ class CommandFactory implements AbstractFactoryInterface
      */
     public function canCreate(ContainerInterface $container, $requestedName)
     {
-        $config = $container->get('Config');
-        
-        $mapper_config = (!empty($config['mapper_config'][$requestedName])) 
-                ? $config['mapper_config'][$requestedName] : null;
-        if (!$mapper_config) {
+        if (!$container->get('Config') || !$container->get('EventManager')) {
             return false;
         }
         
-        $type = (!empty($mapper_config['type'])) 
-                ? $mapper_config['type'] : false;
+        $global_config = $container->get('Config');
+        
+        $config = (!empty($global_config['mapper_config'][$requestedName])) 
+                ? $global_config['mapper_config'][$requestedName] : false;
+        if (!$config) {
+            return false;
+        }
+        
+        $type = (!empty($config['type'])) ? $config['type'] : false;
         if (!$type || $type != self::TYPE) {
             return false;
         }
         
-        $this->table_name = (!empty($mapper_config['table_name'])) 
-                ? $mapper_config['table_name'] : false;
+        $this->table_name = (!empty($config['table_name'])) 
+                ? $config['table_name'] : false;
         if (!$this->table_name) {
             return false;
         }
