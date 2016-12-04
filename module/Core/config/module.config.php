@@ -4,14 +4,16 @@ namespace Core;
 use Core\Factory\ListControllerFactory;
 use Core\Factory\WriteControllerFactory;
 use Core\Factory\DeleteControllerFactory;
-use Core\Factory\RepositoryFactory;
-use Core\Factory\CommandFactory;
+use Core\Resource\ListResourceFactory;
+use Core\Resource\WriteResourceFactory;
+use Core\Resource\DeleteResourceFactory;
 
 return [
     'service_manager' => [
         'abstract_factories' => [
-            RepositoryFactory::class,
-            CommandFactory::class,
+            ListResourceFactory::class,
+            WriteResourceFactory::class,
+            DeleteResourceFactory::class,
         ],
         'factories' => [
             Logger\MonologLogger::class => Logger\LoggerFactory::class,

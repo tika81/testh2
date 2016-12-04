@@ -28,8 +28,6 @@ class WriteControllerFactory implements AbstractFactoryInterface
         }
         
         $global_config = $container->get('Config');
-        
-        //config
         $config = (!empty($global_config['controller_config'][$requestedName])) 
                 ? $global_config['controller_config'][$requestedName] : false;
         if (!$config) {
@@ -41,24 +39,9 @@ class WriteControllerFactory implements AbstractFactoryInterface
             return false;
         }
         
-        //command
-        $command_class = (!empty($config['command_class'])) 
-                ? $config['command_class'] : false;
-        if (!$command_class) {
-            return false;
-        }
-        
-        //form
-        $form_class = (!empty($config['form_class'])) 
-                ? $config['form_class'] : false;
-        if (!$form_class) {
-            return false;
-        }
-        
-        //repository
-        $repository_class = (!empty($config['repository_class'])) 
-                ? $config['repository_class'] : false;
-        if (!$repository_class) {
+        $write_resource_class = (!empty($config['write_resource_class'])) 
+                ? $config['write_resource_class'] : null;
+        if (!$write_resource_class) {
             return false;
         }
         
@@ -84,14 +67,10 @@ class WriteControllerFactory implements AbstractFactoryInterface
             array $options = null
     ) {
         $config = $this->config;
-        
-        $form_manager = $container->get('FormElementManager');
-        $form = $form_manager->get($config['form_class']);
-        $command = $container->get($config['command_class']);
-        $repository = $container->get($config['repository_class']);
-        $logger = $container->get('Core\Logger\MonologLogger');
-        
-        $args = [$command, $form, $repository, $logger];
+        $args = [
+            $container->get($config['write_resource_class']), 
+            $container->get('Core\Logger\MonologLogger'),
+        ];
         
         $reflector = new \ReflectionClass($requestedName);
         return $reflector->newInstanceArgs($args);

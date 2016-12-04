@@ -8,7 +8,7 @@ interface RepositoryInterface
      * Each entry should be a object instance.
      * @return Entity[]
      */
-    public function fetchAll();
+    public function fetchAll($params = []);
     
     /**
      * Return a single object.

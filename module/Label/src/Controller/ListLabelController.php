@@ -2,9 +2,10 @@
 namespace Label\Controller;
 
 use Zend\Mvc\Controller\AbstractActionController;
-use Core\Model\RepositoryInterface;
 use Zend\View\Model\ViewModel;
 use Psr\Log\LoggerInterface;
+use Core\Resource\ListResourceInterface;
+use Core\Model\EntityInterface;
 
 /**
  * List Label Controller
@@ -19,19 +20,19 @@ class ListLabelController extends AbstractActionController
     protected $logger;
     
     /**
-     * @var RepositoryInterface 
+     * @var ListResourceInterface 
      */
-    protected $repository;
+    protected $resource;
     
     /**
-     * @param LabelRepository $repository
+     * @param LabelRepository $resource
      * @param Logger $logger
      */
     public function __construct(
-            RepositoryInterface $repository, 
+            ListResourceInterface $resource, 
             LoggerInterface $logger
     ) {
-        $this->repository = $repository;
+        $this->resource = $resource;
         $this->logger = $logger;
     }
     
@@ -42,7 +43,7 @@ class ListLabelController extends AbstractActionController
     public function indexAction()
     {
         return new ViewModel([
-            'labels' => $this->repository->fetchAll(),
+            'labels' => $this->resource->fetchAll(),
         ]);
     }
     
@@ -53,13 +54,8 @@ class ListLabelController extends AbstractActionController
     public function detailAction()
     {
         $id = $this->params()->fromRoute('id');
-        
-        try {
-            $label = $this->repository->fetch($id);
-        } catch (\InvalidArgumentException $ex) {
-            $this->logger->error(sprintf(
-                '[Line:%d] - %s File: %s', __LINE__, $ex->getMessage(), __FILE__
-            ));
+        $label = $this->resource->fetch($id);
+        if (!$label instanceof EntityInterface) {
             return $this->redirect()->toRoute('label');
         }
         

@@ -3,10 +3,11 @@ namespace Label\Controller;
 
 use Core\Model\CommandInterface;
 use Core\Model\RepositoryInterface;
-use InvalidArgumentException;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 use Psr\Log\LoggerInterface;
+use Core\Resource\DeleteResourceInterface;
+use Core\Model\EntityInterface;
 
 /**
  * Delete Label Controller
@@ -15,17 +16,11 @@ use Psr\Log\LoggerInterface;
 class DeleteLabelController extends AbstractActionController
 {
     /**
-     * @var CommandInterface 
+     * @var DeleteResourceInterface
      */
-    private $command;
+    protected $resource;
     
     /**
-     * @var RepositoryInterface 
-     */
-    private $repository;
-    
-    /**
-     * Logger
      * @var LoggerInterface 
      */
     protected $logger;
@@ -36,12 +31,10 @@ class DeleteLabelController extends AbstractActionController
      * @param LoggerInterface $logger
      */
     public function __construct(
-            CommandInterface $command, 
-            RepositoryInterface $repository,
+            DeleteResourceInterface $resource, 
             LoggerInterface $logger
     ) {
-        $this->command = $command;
-        $this->repository = $repository;
+        $this->resource = $resource;
         $this->logger = $logger;
     }
     
@@ -53,40 +46,21 @@ class DeleteLabelController extends AbstractActionController
     {
         $id = intval($this->params()->fromRoute('id'));
         if (!$id) {
-            $this->logger->error(sprintf(
-                '[Line:%d] - Identifier \'id\' not found, file: %s', __LINE__, 
-                    __FILE__
-            ));
-            return $this->redirect()->toRoute('label');
-        }
-        
-        try {
-            $label = $this->repository->fetch($id);
-        } catch (InvalidArgumentException $ex) {
             $this->logger->error(
-                sprintf('[Line:%d] - Not found, file: %s', __LINE__, __FILE__), 
-                [$ex->getMessage()]
+                    sprintf('[Line:%d] - Identifier \'id\' not found, file: %s',
+                            __LINE__, __FILE__)
             );
             return $this->redirect()->toRoute('label');
         }
         
-        $request = $this->getRequest();
-        if (!$request->isPost()) {
-            return new ViewModel(['label' => $label]);
-        }
-        
-        if ($id != $request->getPost('id') 
-                || 'Delete' !== $request->getPost('confirm', 'no')) {
+        $label = $this->resource->delete($id);
+        if (!$label) {
             return $this->redirect()->toRoute('label');
+        } elseif (is_string($label)) {
+            return $this->redirect()->toRoute('label');
+        } elseif (is_array($label)) {
+            return new ViewModel($label);
         }
-        
-        //delete label
-        if (!$this->command->delete($label)) {
-            $this->logger->critical(sprintf(
-                '[Line:%d] - Delete action failed, file: %s', __LINE__, __FILE__
-            ));
-        }
-        return $this->redirect()->toRoute('label');
     }
     
 }

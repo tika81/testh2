@@ -38,6 +38,12 @@ class Repository implements RepositoryInterface
     protected $logger;
     
     /**
+     * Sort available fields
+     * @var array
+     */
+    protected $sort_available_fields = [];
+    
+    /**
      * @param Sql $sql
      * @param Select $select
      * @param HydratingResultSet $result_set
@@ -56,10 +62,48 @@ class Repository implements RepositoryInterface
     }
     
     /**
+     * Fetch all hook
+     * @param Select $select
+     * @param array $params
+     * @return Select $select
+     */
+    protected function fetchAllHook(Select $select, $params = [])
+    {
+        return $select;
+    }
+    
+    /**
+     * Fetch all order
+     * @param Select $select
+     * @param array $params
+     * @return Select $select
+     */
+    protected function fetchAllOrder(Select $select, $params = [])
+    {
+        $sort_arr = [];
+        $sort_params = (!empty($params['sort'])) 
+                ? explode(',', $params['sort']) : [$this->identifier];
+        foreach ($sort_params as $sort_field) {
+            if ($sort_field[0] === '-' && in_array(substr($sort_field, 1), 
+                    $this->sort_available_fields)) {
+                $sort = substr($sort_field, 1);
+                $order = ' DESC';
+                $sort_arr[] = $sort . $order;
+            } elseif (in_array($sort_field, $this->sort_available_fields)) {
+                $sort_arr[] = $sort_field . ' ASC';
+            }
+        }
+//        print_r($sort_arr);die;
+        return $select->order($sort_arr);
+    }
+    
+    /**
      * {@inheritDoc}
      */
-    public function fetchAll()
+    public function fetchAll($params = [])
     {
+        $this->select = $this->fetchAllHook($this->select, $params);
+        $this->select = $this->fetchAllOrder($this->select, $params);
         $stmt = $this->sql->prepareStatementForSqlObject($this->select);
         $result = $stmt->execute();
         if (!$result instanceof ResultInterface || !$result->isQueryResult()) {

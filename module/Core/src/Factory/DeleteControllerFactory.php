@@ -28,7 +28,6 @@ class DeleteControllerFactory implements AbstractFactoryInterface
         }
         
         $global_config = $container->get('Config');
-        
         $config = (!empty($global_config['controller_config'][$requestedName])) 
                 ? $global_config['controller_config'][$requestedName] : false;
         if (!$config) {
@@ -40,17 +39,9 @@ class DeleteControllerFactory implements AbstractFactoryInterface
             return false;
         }
         
-        //command
-        $command_class = (!empty($config['command_class'])) 
-                ? $config['command_class'] : false;
-        if (!$command_class) {
-            return false;
-        }
-        
-        //repository
-        $repository_class = (!empty($config['repository_class'])) 
-                ? $config['repository_class'] : false;
-        if (!$repository_class) {
+        $delete_resource_class = (!empty($config['delete_resource_class'])) 
+                ? $config['delete_resource_class'] : false;
+        if (!$delete_resource_class) {
             return false;
         }
         
@@ -76,12 +67,10 @@ class DeleteControllerFactory implements AbstractFactoryInterface
             array $options = null
     ) {
         $config = $this->config;
-        
-        $command = $container->get($config['command_class']);
-        $repository = $container->get($config['repository_class']);
-        $logger = $container->get('Core\Logger\MonologLogger');
-        
-        $args = [$command, $repository, $logger];
+        $args = [
+            $container->get($config['delete_resource_class']), 
+            $container->get('Core\Logger\MonologLogger'),
+        ];
         
         $reflector = new \ReflectionClass($requestedName);
         return $reflector->newInstanceArgs($args);

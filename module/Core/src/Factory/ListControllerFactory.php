@@ -28,7 +28,6 @@ class ListControllerFactory implements AbstractFactoryInterface
         }
         
         $global_config = $container->get('Config');
-        
         $config = (!empty($global_config['controller_config'][$requestedName])) 
                 ? $global_config['controller_config'][$requestedName] : false;
         if (!$config) {
@@ -40,9 +39,9 @@ class ListControllerFactory implements AbstractFactoryInterface
             return false;
         }
         
-        $repository_class = (!empty($config['repository_class'])) 
-                ? $config['repository_class'] : null;
-        if (!$repository_class) {
+        $list_resource_class = (!empty($config['list_resource_class'])) 
+                ? $config['list_resource_class'] : null;
+        if (!$list_resource_class) {
             return false;
         }
         
@@ -68,11 +67,10 @@ class ListControllerFactory implements AbstractFactoryInterface
             array $options = null
     ) {
         $config = $this->config;
-        
-        $logger = $container->get('Core\Logger\MonologLogger');
-        $repository = $container->get($config['repository_class']);
-        
-        $args = [$repository, $logger];
+        $args = [
+            $container->get($config['list_resource_class']), 
+            $container->get('Core\Logger\MonologLogger'),
+        ];
         
         $reflector = new \ReflectionClass($requestedName);
         return $reflector->newInstanceArgs($args);

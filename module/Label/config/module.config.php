@@ -14,31 +14,44 @@ return [
     'controller_config' => [
         'Label\Controller\ListLabelController' => [
             'type' => 'list',
-            'repository_class' => 'Label\Model\LabelRepository',
+            'list_resource_class' => 'Label\Resource\ListLabelResource' 
         ],
         'Label\Controller\WriteLabelController' => [
             'type' => 'write',
-            'repository_class' => 'Label\Model\LabelRepository',
-            'command_class'    => 'Label\Model\LabelCommand',
-            'form_class'       => 'Label\Form\LabelForm',
+            'write_resource_class' => 'Label\Resource\WriteLabelResource',
+            
         ],
         'Label\Controller\DeleteLabelController' => [
             'type' => 'delete',
-            'repository_class' => 'Label\Model\LabelRepository',
-            'command_class'    => 'Label\Model\LabelCommand',
+            'delete_resource_class' => 'Label\Resource\DeleteLabelResource',
         ],
     ],
     
-    'mapper_config' => [
-        'Label\Model\LabelRepository' => [
+    'resource_config' => [
+        'Label\Resource\ListLabelResource' => [
+            'repository_class' => 'Label\Model\LabelRepository',
+            'entity_class'     => 'Label\Model\Label',
             'table_name' => 'ht_label',
-            'entity_class' => 'Label\Model\Label',
-            'type' => 'repository',
+            'type'       => 'list',
         ],
-        'Label\Model\LabelCommand' => [
+        'Label\Resource\WriteLabelResource' => [
+            'command_class'    => 'Label\Model\LabelCommand',
+            'entity_class'     => 'Label\Model\Label',
+            'form_class'       => 'Label\Form\LabelForm',
             'table_name' => 'ht_label',
-            'entity_class' => 'Label\Model\Label',
-            'type' => 'command',
+            'type'       => 'write',
+            'dependencies' => [
+                'Label\Resource\ListLabelResource'
+            ],
+        ],
+        'Label\Resource\DeleteLabelResource' => [
+            'command_class'    => 'Label\Model\LabelCommand',
+            'entity_class'     => 'Label\Model\Label',
+            'table_name' => 'ht_label',
+            'type'       => 'delete',
+            'dependencies' => [
+                'Label\Resource\ListLabelResource'
+            ],
         ],
     ],
     
