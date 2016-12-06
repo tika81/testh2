@@ -68,6 +68,15 @@ return [
                 ],
                 'may_terminate' => true,
                 'child_routes' => [
+//                    'ajaxLabels' => [
+//                        'type' => Literal::class,
+//                        'options' => [
+//                            'route' => '/ajaxLabels',
+//                            'defaults' => [
+//                                'action' => 'ajaxLabels'
+//                            ],
+//                        ]
+//                    ],
                     'detail' => [
                         'type' => Segment::class,
                         'options' => [

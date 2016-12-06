@@ -16,7 +16,8 @@ class LabelRepository extends Repository
      */
     protected $sort_available_fields = [
         'id', 
-        'name'
+        'name',
+        'default_text',
     ];
     
     /**
@@ -28,7 +29,8 @@ class LabelRepository extends Repository
     protected function fetchAllHook(Select $select, $params = [])
     {
         if (!empty($params['q'])) {
-            $select->where->like('name', '%' . $params['q'] . '%');
+            $select->where->like('name', '%' . $params['q'] . '%')
+                ->or->like('default_text',  '%' . $params['q'] . '%');
         }
         
         return $select;

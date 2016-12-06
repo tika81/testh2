@@ -63,18 +63,4 @@ class ListLabelController extends AbstractActionController
             'label' => $label,
         ]);
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
 }
