@@ -1,6 +1,8 @@
 <?php
 namespace Core\Model;
 
+use Core\Model\EntityInterface;
+
 /**
  * Command Interface
  * @author bojan
@@ -8,28 +10,18 @@ namespace Core\Model;
 interface CommandInterface
 {
     /**
-     * Persist a new object in the system.
-     *
-     * @param Entity $entity The object to insert; may or may not have 
-     * an identifier.
-     * @return Entity The inserted object, with identifier.
+     * Persist a new object or update an existing object in the system
+     * @param EntityInterface $entity
+     * @return $entity Returns identifier
      */
-    public function insert(Entity $entity);
-
-    /**
-     * Update an existing object in the system.
-     *
-     * @param Entity $entity The object to update; must have an identifier.
-     * @return Entity The updated object.
-     */
-    public function update(Entity $entity);
-
+    public function save(EntityInterface $entity);
+    
     /**
      * Delete a object from the system.
      *
      * @param Entity $entity The object to delete.
      * @return bool
      */
-    public function delete(Entity $entity);
+    public function delete(EntityInterface $entity);
 }
 

@@ -3,12 +3,13 @@ namespace Core\Model;
 
 use InvalidArgumentException;
 use RuntimeException;
-use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\Select;
-use Zend\Db\Adapter\Driver\ResultInterface;
-use Zend\Db\ResultSet\HydratingResultSet;
 use Core\Model\RepositoryInterface;
 use Psr\Log\LoggerInterface;
+use Zend\Db\TableGateway\TableGatewayInterface;
+use Zend\Paginator\Paginator;
+use Zend\Paginator\Adapter\DbSelect;
+use Core\Model\EntityInterface;
 
 /**
  * Repository mapper
@@ -22,14 +23,9 @@ class Repository implements RepositoryInterface
     protected $identifier = 'id';
     
     /**
-     * @var Sql 
+     * @var TableGatewayInterface 
      */
-    private $sql;
-    
-    /**
-     * @var HydratingResultSet 
-     */
-    private $result_set;
+    private $table_gateway;
     
     /**
      * Logger
@@ -38,26 +34,14 @@ class Repository implements RepositoryInterface
     protected $logger;
     
     /**
-     * Sort available fields
-     * @var array
-     */
-    protected $sort_available_fields = [];
-    
-    /**
-     * @param Sql $sql
-     * @param Select $select
-     * @param HydratingResultSet $result_set
+     * @param TableGatewayInterface $table_gateway
      * @param LoggerInterface $logger
      */
     public function __construct(
-            Sql $sql, 
-            Select $select, 
-            HydratingResultSet $result_set, 
+            TableGatewayInterface $table_gateway,
             LoggerInterface $logger
     ) {
-        $this->sql = $sql;
-        $this->select = $select;
-        $this->result_set = $result_set;
+        $this->table_gateway = $table_gateway;
         $this->logger = $logger;
     }
     
@@ -73,12 +57,11 @@ class Repository implements RepositoryInterface
     }
     
     /**
-     * Fetch all order
-     * @param Select $select
+     * Prepares order for fetch all
      * @param array $params
-     * @return Select $select
+     * @return array
      */
-    protected function fetchAllOrder(Select $select, $params = [])
+    protected function fetchAllOrder($params = [])
     {
         $sort_arr = [];
         $sort_params = (!empty($params['sort'])) 
@@ -93,52 +76,45 @@ class Repository implements RepositoryInterface
                 $sort_arr[] = $sort_field . ' ASC';
             }
         }
-//        print_r($sort_arr);die;
-        return $select->order($sort_arr);
+        return $sort_arr;
     }
     
     /**
-     * {@inheritDoc}
+     * Fetch all
+     * @param array $params
+     * @return Paginator
      */
     public function fetchAll($params = [])
     {
-        $this->select = $this->fetchAllHook($this->select, $params);
-        $this->select = $this->fetchAllOrder($this->select, $params);
-        $stmt = $this->sql->prepareStatementForSqlObject($this->select);
-        $result = $stmt->execute();
-        if (!$result instanceof ResultInterface || !$result->isQueryResult()) {
-            return [];
-        }
+        $order  = $this->fetchAllOrder($params);
+        $select = $this->fetchAllHook(
+                $this->table_gateway->getSql()->select(), 
+                $params
+        );
+        $select->order($order);
         
-        $this->result_set->initialize($result);
-        return $this->result_set;
+        $paginator_adapter = new DbSelect(
+                $select,
+                $this->table_gateway->getAdapter(),
+                $this->table_gateway->getResultSetPrototype()
+        );
+        $paginator = new Paginator($paginator_adapter);
+        $paginator->setCurrentPageNumber($params['page_number']);
+        $paginator->setItemCountPerPage($params['page_size']);
+        return $paginator;
     }
     
     /**
-     * {@inheritDoc}
+     * Fetch
+     * @return EntityInterface
      * @throws InvalidArgumentException
      * @throws RuntimeException
      */
     public function fetch($id)
     {
-        $this->select->where([$this->identifier . ' = ?' => $id]);
+        $row = $this->table_gateway->select([$this->identifier . ' = ?' => $id]);
+        $entity = $row->current();
         
-        $statement = $this->sql->prepareStatementForSqlObject($this->select);
-        $result = $statement->execute();
-        
-        if (!$result instanceof ResultInterface || !$result->isQueryResult()) {
-            $this->logger->critical(sprintf(
-                '[Line:%d] - Failed retrieving entity with identifier "%s"; '
-                . 'unknown database error, file: %s', __LINE__, $id, __FILE__
-            ));
-            throw new \Zend\Db\ResultSet\Exception\RuntimeException(
-                    sprintf('Failed retrieving entity with identifier "%s"; '
-                    . 'unknown database error.', $id)
-            );
-        }
-        
-        $this->result_set->initialize($result);
-        $entity = $this->result_set->current();
         if (!$entity) {
             $this->logger->error(sprintf(
                 '[Line: %d] - Entity with identifier "%s" not found, file: %s ',

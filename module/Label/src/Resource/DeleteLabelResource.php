@@ -12,7 +12,7 @@ use Core\Model\EntityInterface;
 class DeleteLabelResource extends DeleteResource
 {
     /**
-     * 
+     * Delete Label
      * @param integer $id
      * @return boolean|string|array
      */
@@ -36,13 +36,14 @@ class DeleteLabelResource extends DeleteResource
             return false;
         }
         
-        //delete label
-        if (!$this->command->delete($label)) {
+        try {
+            return $this->command->delete($label);
+        } catch (\Exception $ex) {
             $this->logger->critical(
-                    sprintf('[Line:%d] - Delete action failed, file: %s', 
-                            __LINE__, __FILE__)
+                    sprintf('[Line:%d] - %s File: %s', __LINE__, 
+                            $ex->getMessage(), __FILE__)
             );
-            return false;
+            throw $ex;
         }
     }
 }

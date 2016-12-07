@@ -15,8 +15,9 @@ interface EntityInterface
     
     /**
      * Returns array copy of object
+     * @param bool $unset
      * @return array
      */
-    public function toArray();
+    public function toArray($unset = false);
 }
 

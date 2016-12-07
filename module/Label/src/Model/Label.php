@@ -9,11 +9,22 @@ use Core\Model\Entity;
  */
 class Label extends Entity
 {
+    /**
+     * Public properties
+     * @var array
+     */
     protected $public_properties = [
         'id',
         'name',
         'default_text'
     ];
+    
+    /**
+     * Unset properties
+     * Use this for insert/update
+     * @var array
+     */
+    protected $unset_properties = ['id'];
     
     /**
      * @var int

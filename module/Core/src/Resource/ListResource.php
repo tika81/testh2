@@ -5,6 +5,7 @@ use Core\Model\RepositoryInterface;
 use Psr\Log\LoggerInterface;
 use Core\Resource\ListResourceInterface;
 use Zend\Stdlib\RequestInterface;
+use Zend\Paginator\Paginator;
 
 /**
  * List Resource
@@ -44,16 +45,22 @@ class ListResource implements ListResourceInterface
     /**
      * Return a set of all objects that we can iterate over.
      * Each entry should be a object instance.
-     * @return Entity[]
+     * @return Paginator
      */
     public function fetchAll()
     {
         $query_params = $this->request->getQuery();
         $q    = (!empty($query_params['q'])) ? $query_params['q'] : '';
         $sort = (!empty($query_params['sort'])) ? $query_params['sort'] : '';
+        $page_number = (!empty($query_params['page_number'])) 
+                ? $query_params['page_number'] : 1;
+        $page_size = (!empty($query_params['page_size'])) 
+                ? $query_params['page_size'] : 10;
         $params = [
             'q' => $q,
-            'sort' => $sort
+            'sort' => $sort,
+            'page_number' => $page_number,
+            'page_size' => $page_size,
         ];
         return $this->repository->fetchAll($params);
     }

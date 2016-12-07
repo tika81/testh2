@@ -5,7 +5,7 @@ use Zend\ServiceManager\Factory\AbstractFactoryInterface;
 use Interop\Container\ContainerInterface;
 use Zend\Http\PhpEnvironment\Request;
 use Core\Resolver\DependencyResolver;
-use Core\Builder\CommandBuilder;
+use Core\Builder\MapperBuilder;
 
 /**
  * Delete Resource Factory
@@ -63,8 +63,8 @@ class DeleteResourceFactory  implements AbstractFactoryInterface
     ) {
         $config = $this->config;
         $logger = $container->get('Core\Logger\MonologLogger');
-        $command_builder = new CommandBuilder($container, $logger, $config);
-        $command = $command_builder->createCommand();
+        $mapper_builder = new MapperBuilder($container, $logger, $config);
+        $command = $mapper_builder->createCommand();
         $request = new Request;
         $basic_args = [$request, $command, $logger];
         

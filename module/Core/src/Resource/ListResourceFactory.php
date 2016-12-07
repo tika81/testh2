@@ -5,7 +5,7 @@ use Zend\ServiceManager\Factory\AbstractFactoryInterface;
 use Interop\Container\ContainerInterface;
 use Zend\Http\PhpEnvironment\Request;
 use Core\Resolver\DependencyResolver;
-use Core\Builder\RepositoryBuilder;
+use Core\Builder\MapperBuilder;
 
 /**
  * Description of ListResourceFacory
@@ -63,8 +63,8 @@ class ListResourceFactory implements AbstractFactoryInterface
     ) {
         $config = $this->config;
         $logger = $container->get('Core\Logger\MonologLogger');
-        $repository_builder = new RepositoryBuilder($container, $logger, $config);
-        $repository = $repository_builder->createRepository();
+        $mapper_builder = new MapperBuilder($container, $logger, $config);
+        $repository = $mapper_builder->createRepository();
         $request = new Request;
         $basic_args = [$request, $repository, $logger];
         

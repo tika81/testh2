@@ -54,13 +54,13 @@ class DeleteLabelController extends AbstractActionController
         }
         
         $label = $this->resource->delete($id);
-        if (!$label) {
-            return $this->redirect()->toRoute('label');
-        } elseif (is_string($label)) {
+        if (is_string($label)) {
             return $this->redirect()->toRoute('label');
         } elseif (is_array($label)) {
             return new ViewModel($label);
         }
+        
+        return $this->redirect()->toRoute('label');
     }
     
 }

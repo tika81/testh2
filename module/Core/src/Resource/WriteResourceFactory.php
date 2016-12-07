@@ -5,7 +5,7 @@ use Zend\ServiceManager\Factory\AbstractFactoryInterface;
 use Interop\Container\ContainerInterface;
 use Zend\Http\PhpEnvironment\Request;
 use Core\Resolver\DependencyResolver;
-use Core\Builder\CommandBuilder;
+use Core\Builder\MapperBuilder;
 
 /**
  * Write Resource Factory
@@ -62,8 +62,8 @@ class WriteResourceFactory implements AbstractFactoryInterface
     ) {
         $config = $this->config;
         $logger = $container->get('Core\Logger\MonologLogger');
-        $command_builder = new CommandBuilder($container, $logger, $config);
-        $command = $command_builder->createCommand();
+        $mapper_builder = new MapperBuilder($container, $logger, $config);
+        $command = $mapper_builder->createCommand();
         $form_manager = $container->get('FormElementManager');
         $form = $form_manager->get($config['form_class']);
         $request = new Request;

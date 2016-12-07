@@ -7,7 +7,18 @@ namespace Core\Model;
  */
 class Entity implements EntityInterface
 {
+    /**
+     * Public properties
+     * @var array
+     */
     protected $public_properties = [];
+    
+    /**
+     * Unset properties
+     * Use this for insert/update
+     * @var array
+     */
+    protected $unset_properties = [];
     
     /**
      * Exchange array
@@ -25,10 +36,14 @@ class Entity implements EntityInterface
      * Returns array copy of object
      * @return array
      */
-    public function toArray()
+    public function toArray($unset = false)
     {
         $data = [];
         foreach ($this->public_properties as $public_property) {
+            if ($unset && in_array($public_property, $this->unset_properties)) {
+                continue;
+            }
+            
             $data[$public_property] = (!empty($this->$public_property)) 
                     ? $this->$public_property : null;
         }

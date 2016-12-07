@@ -3,13 +3,11 @@ namespace Core\Model;
 
 use RuntimeException;
 use Zend\Db\Adapter\Driver\ResultInterface;
-use Zend\Db\Sql\Delete;
-use Zend\Db\Sql\Insert;
-use Zend\Db\Sql\Sql;
-use Zend\Db\Sql\Update;
 use Core\Model\CommandInterface;
 use Core\Model\Entity;
+use Core\Model\EntityInterface;
 use Psr\Log\LoggerInterface;
+use Zend\Db\TableGateway\TableGatewayInterface;
 
 /**
  * Command mapper
@@ -24,24 +22,15 @@ class Command implements CommandInterface
     protected $identifier = 'id';
     
     /**
-     * @var Sql 
+     * Unset values from insert/
+     * @var array
      */
-    private $sql;
+    protected $unset_data = [];
     
     /**
-     * @var Insert 
+     * @var TableGatewayInterface 
      */
-    private $insert;
-    
-    /**
-     * @var Update 
-     */
-    private $update;
-    
-    /**
-     * @var Delete 
-     */
-    private $delete;
+    private $table_gateway;
     
     /**
      * Logger
@@ -50,104 +39,47 @@ class Command implements CommandInterface
     protected $logger;
     
     /**
-     * @param Sql $sql
-     * @param Insert $insert
-     * @param Update $update
-     * @param Delete $delete
+     * @param TableGatewayInterface $table_gateway
      * @param LoggerInterface $logger
      */
     public function __construct(
-            Sql $sql,
-            Insert $insert,
-            Update $update,
-            Delete $delete,
+            TableGatewayInterface $table_gateway,
             LoggerInterface $logger
     ) {
-        $this->sql    = $sql;
-        $this->insert = $insert;
-        $this->update = $update;
-        $this->delete = $delete;
+        $this->table_gateway = $table_gateway;
         $this->logger = $logger;
     }
     
-     /**
-     * Persist a new Entity in the system.
-     *
-     * @param Entity $entity The Entity to insert; may or may not have 
-     * an identifier.
-     * @return Entity The inserted Entity, with identifier.
+    /**
+     * Persist a new object or update an existing object in the system
+     * @param EntityInterface $entity
+     * @return EntityInterface
      */
-    public function insert(Entity $entity)
+    public function save(EntityInterface $entity)
     {
         $identifier = $this->identifier;
-        
-        $this->insert->values($entity->toArray());
-        $stmt = $this->sql->prepareStatementForSqlObject($this->insert);
-        $result = $stmt->execute();
-        
-        if (!$result instanceof ResultInterface) {
-            $this->logger->critical(sprintf(
-                '[Line: %d] - Database error occurred during entity '
-                    . 'insert operation, file: %s ', __LINE__, __FILE__)
-            );
-            throw new RuntimeException(
-                'Database error occurred during entity insert operation'
-            );
+        $id = $entity->$identifier;
+        $data = $entity->toArray(true);
+        if (!$id) {
+            $this->table_gateway->insert($data);
+            $id = $this->table_gateway->getLastInsertValue();
+        } else {
+            $this->table_gateway->update($data, [$identifier => $id]);
         }
-        
-        $id = $result->getGeneratedValue();
         
         $entity->$identifier = $id;
         return $entity;
     }
-
-    /**
-     * Update an existing Entity in the system.
-     *
-     * @param Entity $entity The Entity to update; must have an identifier.
-     * @return Entity The updated Entity.
-     */
-    public function update(Entity $entity)
-    {
-        $identifier = $this->identifier;
-        
-        if (!$entity->$identifier) {
-            $this->logger->error(sprintf(
-                '[Line: %d] - Cannot update Entity; missing identifier,'
-                    . ' file: %s', __LINE__, __FILE__
-            ));
-            throw RuntimeException('Cannot update Entity; missing identifier');
-        }
-        
-        $this->update->set($entity->toArray());
-        $this->update->where([$identifier . ' = ?' => $entity->$identifier]);
-        
-        $stmt = $this->sql->prepareStatementForSqlObject($this->update);
-        $result = $stmt->execute();
-        
-        if (!$result instanceof ResultInterface) {
-            $this->logger->critical(sprintf(
-                '[Line: %d] - Database error occurred during Entity '
-                    . 'update operation, file: %s ', __LINE__, __FILE__
-            ));
-            throw new RuntimeException(
-                'Database error occurred during Entity update operation'
-            );
-        }
-        
-        return $entity;
-    }
-
+    
     /**
      * Delete a Entity from the system.
      *
      * @param Entity $entity The Entity to delete.
      * @return bool
      */
-    public function delete(Entity $entity)
+    public function delete(EntityInterface $entity)
     {
         $identifier = $this->identifier;
-        
         if (!$entity->$identifier) {
             $this->logger->error(sprintf(
                 '[Line: %d] - Cannot delete Entity; missing identifier,'
@@ -156,20 +88,7 @@ class Command implements CommandInterface
             throw RuntimeException('Cannot delete Entity; missing identifier');
         }
         
-        $this->delete->where([$identifier . ' = ?' => $entity->$identifier]);
-        
-        $stmt = $this->sql->prepareStatementForSqlObject($this->delete);
-        $result = $stmt->execute();
-        
-        if (!$result instanceof ResultInterface) {
-            $this->logger->critical(
-                sprintf('[Line:%d] - Delete action failed, file: %s', 
-                        __LINE__, __FILE__)
-            );
-            return false;
-        }
-        
-        return true;
+        return $this->table_gateway->delete([$identifier => $entity->$identifier]);
     }
 }
 

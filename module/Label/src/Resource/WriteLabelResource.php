@@ -30,7 +30,7 @@ class WriteLabelResource extends WriteResource
         
         $label = $this->form->getData();
         try {
-            return $this->command->insert($label);
+            return $this->command->save($label);
         } catch (\Exception $ex) {
             $this->logger->critical(
                     sprintf('[Line:%d] - %s File: %s', __LINE__, 
@@ -68,7 +68,7 @@ class WriteLabelResource extends WriteResource
         }
         
         try {
-            return $this->command->update($label);
+            return $this->command->save($label);
         } catch (\Exception $ex) {
             $this->logger->critical(sprintf(
                 '[Line:%d] - %s File: %s', __LINE__, $ex->getMessage(), __FILE__
